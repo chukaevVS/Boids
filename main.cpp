@@ -45,16 +45,9 @@ class Bird {
             triangle.setPosition(sf::Vector2f(x, y));
         }
 
-        void setX(float newX) {
-            x = newX;
-        }
 
         sf::Vector2f getPos() {
             return sf::Vector2f(x + 15, y + 15);
-        }
-
-        void setColor() {
-            this->triangle.setFillColor(sf::Color::Red);    
         }
 
         sf::Vector2f getAccelerationVec() {
@@ -65,7 +58,7 @@ class Bird {
             return sf::Vector2f(dx, dy);
         }
 
-        void setAccelerationVec(sf::Vector2f newAcceleration) {
+        void setAccelerationVec(sf::Vector2f newAcceleration) { // Fix Vlad
             accelerationVec += newAcceleration;
             float dist = sqrt(pow(dx - x, 2) + pow(dy - y, 2));
             accelerationVec = accelerationVec / dist;
@@ -75,7 +68,7 @@ class Bird {
 
         }
 
-        void normalizeAccelertion() {
+        void normalizeAccelertion() { // Fix Vlad
             while(dx > 3 && dy > 3) {
                 dx -= 1;
                 dy -= 1;
@@ -96,6 +89,14 @@ class Bird {
             return dy;
         }
 
+        void setDx(float newDx) {
+            dx = newDx;
+        }
+
+        void setDy(float newDy) {
+            dy = newDy;
+        }
+
     private:
         float x, y, dx, dy, tempX, tempY;
         float radius;
@@ -105,26 +106,30 @@ class Bird {
     
 };
 
+float getDistance(Bird boid_1, Bird boid_2)
+{
+    float dist = sqrt(pow(boid_1.getPos().x - boid_2.getPos().x, 2) + 
+                    pow(boid_1.getPos().y - boid_2.getPos().y, 2));
+    return dist;
+}
+
 void ruleOfSeparation(int countOfBoids, Bird flock[])
 {
-    for (int i = 0; i < countOfBoids; i++) { // Rule of SEPARATION 
+    for (int i = 0; i < countOfBoids; i++) {
             std::vector<sf::Vector2f> vectors;
             int birdsInRadius = 0;
             Bird mainBird = flock[i];
             sf::Vector2f vecOfAcceleration = mainBird.getAccelerationVec();
             for (int j = 0; j < countOfBoids; j++) {
                 if (mainBird.getPos() != flock[j].getPos()) {
-                    float dist = sqrt(pow(mainBird.getPos().x - flock[j].getPos().x, 2) + 
-                    pow(mainBird.getPos().y - flock[j].getPos().y, 2));
-                    
-                    if (dist < 200 && vectors.size() > 2) {
-                        for (sf::Vector2f vec : vectors) {
-                            vecOfAcceleration += vec;
-                        }
-                    } else if (dist < 200) {
+                    float dist = getDistance(flock[i], flock[j]);
+                    if (dist < 200) {
                         vectors.push_back(sf::Vector2f(flock[j].getPos().x - mainBird.getPos().x, 
                         flock[j].getPos().y - mainBird.getPos().y));
                         
+                        for (sf::Vector2f vec : vectors) {
+                            vecOfAcceleration += vec;
+                        }
                     } else {
                         flock[i].normalizeAccelertion();
                     }
@@ -144,7 +149,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(width, height), "Boids");
     window.setFramerateLimit(60);
 
-    int countOfBoids = 50; // Set count of boids
+    int countOfBoids = 30; // Set count of boids
 
     Bird *flock = new Bird[countOfBoids];
     for (int i = 0; i < countOfBoids; i++)
@@ -161,7 +166,8 @@ int main()
                 window.close();
         }
 
-        ruleOfSeparation(countOfBoids, flock);
+        ruleOfSeparation(countOfBoids, flock); // My rule of separation
+
 
         for (int i = 0; i < countOfBoids; i++)
         {
