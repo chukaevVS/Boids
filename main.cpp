@@ -29,11 +29,11 @@ class Bird {
             tempX = x + dx;
             tempY = y + dy;
 
-            if (tempY <= 0 || tempY > 570) {
+            if (tempY <= 0 || tempY > 970) {
                 dy *= -1;
             }
 
-            if (tempX > 750 || tempX < 0) {
+            if (tempX > 1550 || tempX < 0) {
                 dx *= -1;
             }
         }
@@ -58,20 +58,44 @@ class Bird {
             return sf::Vector2f(dx, dy);
         }
 
-        void setAccelerationVec(sf::Vector2f newAcceleration) { // Fix Vlad
-            accelerationVec += newAcceleration;
-            float dist = sqrt(pow(dx - x, 2) + pow(dy - y, 2));
-            accelerationVec = accelerationVec / dist;
+        void setAccelerationVecSep(sf::Vector2f newAcceleration) {
+            float speed = sqrt(pow(dx - x, 2) + pow(dy - y, 2));
 
-            dx = (dx + accelerationVec.x / -64);
-            dy = (dy + accelerationVec.y / -64);
+            newAcceleration = newAcceleration / speed; // Limiting speed
+
+            dx = (dx + newAcceleration.x * -0.05);
+            dy = (dy + newAcceleration.y * -0.05);
 
         }
 
-        void normalizeAccelertion() { // Fix Vlad
-            while(dx > 3 && dy > 3) {
-                dx -= 1;
-                dy -= 1;
+        void setAccelerationVecCoh(sf::Vector2f newAcceleration) {
+            float speed = sqrt(pow(dx - x, 2) + pow(dy - y, 2));
+
+            newAcceleration = newAcceleration / speed; // Limiting speed
+
+            dx = (dx + newAcceleration.x * 0.01);
+            dy = (dy + newAcceleration.y * 0.01);
+
+        }
+
+        void normalizeAccelertion() {
+            while((dx > 6 || dx < -6) && (dy > 6 || dy < -6)) {
+                if (dx > 6)
+                {
+                    dx -= 1;
+                }
+                if (dx < -6)
+                {
+                    dx += 1;
+                }
+                if (dy > 6)
+                {
+                    dy -= 1;
+                }
+                if (dy < -6)
+                {
+                    dy += 1;
+                }
             }
         }
 
@@ -106,50 +130,71 @@ class Bird {
     
 };
 
-float getDistance(Bird boid_1, Bird boid_2)
-{
-    float dist = sqrt(pow(boid_1.getPos().x - boid_2.getPos().x, 2) + 
-                    pow(boid_1.getPos().y - boid_2.getPos().y, 2));
-    return dist;
-}
-
 void ruleOfSeparation(int countOfBoids, Bird flock[])
 {
     for (int i = 0; i < countOfBoids; i++) {
-            std::vector<sf::Vector2f> vectors;
-            int birdsInRadius = 0;
-            Bird mainBird = flock[i];
-            sf::Vector2f vecOfAcceleration = mainBird.getAccelerationVec();
-            for (int j = 0; j < countOfBoids; j++) {
-                if (mainBird.getPos() != flock[j].getPos()) {
-                    float dist = getDistance(flock[i], flock[j]);
-                    if (dist < 200) {
-                        vectors.push_back(sf::Vector2f(flock[j].getPos().x - mainBird.getPos().x, 
-                        flock[j].getPos().y - mainBird.getPos().y));
-                        
-                        for (sf::Vector2f vec : vectors) {
-                            vecOfAcceleration += vec;
-                        }
-                    } else {
-                        flock[i].normalizeAccelertion();
+        std::vector<sf::Vector2f> vectors;
+        int birdsInRadius = 0;
+        Bird mainBird = flock[i];
+        sf::Vector2f vecOfAcceleration = mainBird.getAccelerationVec();
+        for (int j = 0; j < countOfBoids; j++) {
+            if (mainBird.getPos() != flock[j].getPos()) {
+                float dist = sqrt(pow(mainBird.getPos().x - flock[j].getPos().x, 2) + 
+                pow(mainBird.getPos().y - flock[j].getPos().y, 2));
+                if (dist < 200) {
+                    vectors.push_back(sf::Vector2f(flock[j].getPos().x - mainBird.getPos().x, 
+                    flock[j].getPos().y - mainBird.getPos().y));
+                    
+                    for (sf::Vector2f vec : vectors) {
+                        vecOfAcceleration += vec;
                     }
+                } 
+                else {
+                    flock[i].normalizeAccelertion();
                 }
             }
-            if(vectors.size() > 2) {
-                flock[i].setAccelerationVec(vecOfAcceleration);
+        }
+        flock[i].setAccelerationVecSep(vecOfAcceleration);
+    }
+}
+
+void ruleOfCohesion(int countOfBoids, Bird flock[])
+{
+    for (int i = 0; i < countOfBoids; i++) {
+        std::vector<sf::Vector2f> vectors;
+        int birdsInRadius = 0;
+        Bird mainBird = flock[i];
+        sf::Vector2f vecOfAcceleration = mainBird.getAccelerationVec();
+        for (int j = 0; j < countOfBoids; j++) {
+            if (mainBird.getPos() != flock[j].getPos()) {
+                float dist = sqrt(pow(mainBird.getPos().x - flock[j].getPos().x, 2) + 
+                pow(mainBird.getPos().y - flock[j].getPos().y, 2));
+                if (dist < 200) {
+                    vectors.push_back(sf::Vector2f(flock[j].getPos().x - mainBird.getPos().x, 
+                    flock[j].getPos().y - mainBird.getPos().y));
+                    
+                    for (sf::Vector2f vec : vectors) {
+                        vecOfAcceleration += vec;
+                    }
+                } 
+                else {
+                    flock[i].normalizeAccelertion();
+                }
             }
         }
+        flock[i].setAccelerationVecCoh(vecOfAcceleration);
+    }
 }
 
 int main()
 {
     srand(time(0));
-    int height = 600;
-    int width = 800;
+    int height = 1000;
+    int width = 1600;
     sf::RenderWindow window(sf::VideoMode(width, height), "Boids");
     window.setFramerateLimit(60);
 
-    int countOfBoids = 30; // Set count of boids
+    int countOfBoids = 100; // Set count of boids
 
     Bird *flock = new Bird[countOfBoids];
     for (int i = 0; i < countOfBoids; i++)
@@ -166,8 +211,8 @@ int main()
                 window.close();
         }
 
-        ruleOfSeparation(countOfBoids, flock); // My rule of separation
-
+        //ruleOfSeparation(countOfBoids, flock);
+        ruleOfCohesion(countOfBoids, flock);
 
         for (int i = 0; i < countOfBoids; i++)
         {
