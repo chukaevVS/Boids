@@ -7,7 +7,7 @@ make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --quest
 # There is NO WARRANTY, to the extent permitted by law.
  
 
-# Make data base, printed on Fri Jul 29 19:24:46 2022
+# Make data base, printed on Mon Aug 01 12:45:26 2022
 
 # Variables
 
@@ -40,7 +40,7 @@ MAKE_COMMAND := C:/ProgramData/chocolatey/lib/make/tools/install/bin/make.exe
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_9884_QQBZTKRNFJUKPSDU
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_18368_ZRMXBJHVDZGBXZXS
 # environment
 VS160COMCOMNTOOLS = C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\
 # environment
@@ -94,7 +94,7 @@ MAKEFILE_LIST := Makefile
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 9884
+VSCODE_PID = 18368
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # automatic
@@ -188,8 +188,7 @@ COMMONPROGRAMFILES(X86) = C:\Program Files (x86)\Common Files
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-TEMP = C:\Users\vladc\AppData\L 
-ocal\Temp
+TEMP = C:\Users\vladc\AppData\Local\Temp
 # environment
 VSCODE_IPC_HOOK = \\.\pipe\2d0e1ef419d1d496f20c58b985da3387-1.69.2-main-sock
 # default
@@ -217,7 +216,7 @@ PROCESSOR_IDENTIFIER = AMD64 Family 23 Model 96 Stepping 1, AuthenticAMD
 
 # Directories
 
-# . (key d:/INKART/boids-chukaevVS/boids, mtime 1659087032): 7 files, no impossibilities.
+# . (key d:/INKART/boids-chukaevVS/boids, mtime 1659252408): 7 files, no impossibilities.
 
 # 7 files, no impossibilities in 1 directories.
 
@@ -256,7 +255,8 @@ compile:
 
 # Not a target:
 Makefile:
-#  Implicit rule search has been done.
+#  Implicit rule search has been  
+done.
 #  Last modified 2022-07-06 13:33:43
 #  File has been updated.
 #  Successfully updated.
@@ -277,8 +277,7 @@ all: compile link
 # Load=0/32=0%, Rehash=0, Collisions=0/3=0%
 
 link:
-#  Implicit rule search has not  
-been done.
+#  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 7):
@@ -304,6 +303,6 @@ been done.
 # strcache performance: lookups = 23 / hit rate = 47%
 # hash-table stats:
 # Load=12/8192=0%, Rehash=0, Collisions=0/23=0%
-# Finished Make data base on Fri Jul 29 19:24:46 2022
+# Finished Make data base on Mon Aug 01 12:45:26 2022
 
  

@@ -1,6 +1,7 @@
 make.exe --dry-run --always-make --keep-going --print-directory
 make: Entering directory 'd:/INKART/boids-chukaevVS/boids'
 g++ -c main.cpp -I"C:\libraries\SFML-2.5.1\include" -DSFML_STATIC
+ 
 g++ main.o -o main -L"C:\libraries\SFML-2.5.1\lib" -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lfreetype -lwinmm -lgdi32 -mwindows
 make: Leaving directory 'd:/INKART/boids-chukaevVS/boids'
  

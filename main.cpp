@@ -3,6 +3,7 @@
 #include <vector>
 #include <time.h>
 #include <cmath>
+#include <math.h>
 
 class Bird {
     public:
@@ -78,24 +79,22 @@ class Bird {
 
         }
 
-        void normalizeAccelertion() {
-            while((dx > 6 || dx < -6) && (dy > 6 || dy < -6)) {
-                if (dx > 6)
-                {
-                    dx -= 1;
-                }
-                if (dx < -6)
-                {
-                    dx += 1;
-                }
-                if (dy > 6)
-                {
-                    dy -= 1;
-                }
-                if (dy < -6)
-                {
-                    dy += 1;
-                }
+        void setAccelerationAlign(sf::Vector2f newAcceleration)
+        {
+
+            dx += (newAcceleration.x - dx) * -0.05;
+            dy += (newAcceleration.y - dy) * -0.05;
+        }
+
+        void limitSpeed(int limit)
+        {
+            int speedLimit = limit;
+            float speed = sqrt(pow(dx, 2) + pow(dy, 2));
+
+            if(speed > speedLimit)
+            {
+                dx = dx / speed * speedLimit;
+                dy = dy / speed * speedLimit;
             }
         }
 
@@ -114,11 +113,11 @@ class Bird {
         }
 
         void setDx(float newDx) {
-            dx = newDx;
+            dx += (newDx - dx) * -4;
         }
 
         void setDy(float newDy) {
-            dy = newDy;
+            dy += (newDy - dy) * -4;
         }
 
     private:
@@ -150,11 +149,12 @@ void ruleOfSeparation(int countOfBoids, Bird flock[])
                     }
                 } 
                 else {
-                    flock[i].normalizeAccelertion();
+                    flock[i].limitSpeed(12);
                 }
             }
         }
         flock[i].setAccelerationVecSep(vecOfAcceleration);
+        flock[i].limitSpeed(12);
     }
 }
 
@@ -178,11 +178,49 @@ void ruleOfCohesion(int countOfBoids, Bird flock[])
                     }
                 } 
                 else {
-                    flock[i].normalizeAccelertion();
+                    flock[i].limitSpeed(6);
                 }
             }
         }
         flock[i].setAccelerationVecCoh(vecOfAcceleration);
+    }
+}
+
+void ruleOfAlignment(int countOfBoids, Bird flock[])
+{
+    for (int i = 0; i < countOfBoids; i++)
+    {
+        float avgDx = 0;
+        float avgDy = 0;
+        int numOfNeighbros = 0;
+
+        for (int j = 0; j < countOfBoids; j++)
+        {
+            if (flock[i].getPos() != flock[j].getPos())
+            {
+                float dist = sqrt(pow(flock[i].getPos().x - flock[j].getPos().x, 2) + 
+                pow(flock[i].getPos().y - flock[j].getPos().y, 2));
+
+                if (dist < 800)
+                {
+                    avgDx += flock[j].getDx();
+                    avgDy += flock[j].getDy();
+
+                    numOfNeighbros++;
+                }
+            }
+        }
+
+        if (numOfNeighbros)
+        {
+            avgDx = avgDx / numOfNeighbros;
+            avgDy = avgDy / numOfNeighbros;
+
+            flock[i].setDx(avgDx);
+            flock[i].setDy(avgDy);
+            flock[i].limitSpeed(6);
+        }
+        //flock[i].limitSpeed(6);
     }
 }
 
@@ -211,15 +249,15 @@ int main()
                 window.close();
         }
 
-        //ruleOfSeparation(countOfBoids, flock);
+        ruleOfSeparation(countOfBoids, flock);
         ruleOfCohesion(countOfBoids, flock);
+        ruleOfAlignment(countOfBoids, flock);
 
         for (int i = 0; i < countOfBoids; i++)
         {
             flock[i].moveBird();
         }
         
-    
         window.clear();
         for (int i = 0; i < countOfBoids; i++)
         {
